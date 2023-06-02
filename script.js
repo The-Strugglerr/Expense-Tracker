@@ -229,9 +229,7 @@ btnLogin.addEventListener('click', function (e) {
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
 
-  //emptying the transfer field
-  inputTransferTo.value = inputTransferAmount.value = '';
-  inputTransferAmount.blur();
+ 
 
   const amount = Number(inputTransferAmount.value);
   const reciverAccount = accounts.find(
@@ -248,6 +246,10 @@ btnTransfer.addEventListener('click', function (e) {
     reciverAccount.movements.push(amount);
     showUi(currentAccount);
   }
+  
+   //emptying the transfer field
+  inputTransferTo.value = inputTransferAmount.value = '';
+  inputTransferAmount.blur();
 });
 
 ////////////////////////////////////////////////////////////////
