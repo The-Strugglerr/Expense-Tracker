@@ -95,8 +95,10 @@ createUserNames(accounts);
 
 //Below function Display the tansaction
 
-const movementsBox = function (movements) {
+const movementsBox = function (movements, sortt = false) {
   containerMovements.innerHTML = '';
+
+  movements = sortt ? movements.slice().sort((a, b) => a - b) : movements;
 
   movements.forEach(function (mov, index) {
     let transaction;
@@ -229,8 +231,6 @@ btnLogin.addEventListener('click', function (e) {
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
 
- 
-
   const amount = Number(inputTransferAmount.value);
   const reciverAccount = accounts.find(
     account => account.userName === inputTransferTo.value
@@ -246,8 +246,7 @@ btnTransfer.addEventListener('click', function (e) {
     reciverAccount.movements.push(amount);
     showUi(currentAccount);
   }
-  
-   //emptying the transfer field
+  //emptying the transfer field
   inputTransferTo.value = inputTransferAmount.value = '';
   inputTransferAmount.blur();
 });
@@ -257,6 +256,18 @@ btnTransfer.addEventListener('click', function (e) {
 ////////////////////////////////////////////////////////////////
 
 //we get loan only if there is deposit in our account that is 10 per of requested loan
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    currentAccount.movements.push(Number(inputLoanAmount.value));
+    showUi(currentAccount);
+  }
+
+  inputLoanAmount.value = '';
+});
 
 ////////////////////////////////////////////////////////////////
 
@@ -285,3 +296,17 @@ btnClose.addEventListener('click', function (e) {
 });
 
 ////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////
+
+//lets talk about sort button
+// when we press sort button our movements get sorted but when we press it again i will get back to normal state
+//now we have to chage ui of movements everytime we press sort button so we need to change of display moments function we need to add sortt parameter to it to understand refer movement function
+
+let sortedState = false;
+
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+  movementsBox(currentAccount.movements, !sortedState);
+  sortedState = !sortedState;
+});
