@@ -8,8 +8,7 @@ Bankist is a web application that provides a dashboard for managing your bank ac
 - [Accounts](#accounts)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+- [Technology Used](#Technology Used)
 
 ## Project Overview
 
