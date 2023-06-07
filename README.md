@@ -8,7 +8,7 @@ Bankist is a web application that provides a dashboard for managing your bank ac
 - [Accounts](#accounts)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Technology Used](#Technology Used)
+
 
 ## Project Overview
 
@@ -52,5 +52,3 @@ Just download all the files put them into a single folder and run index.html fil
 
 With this you can track you pocket money like how much you spend on which dates how much is left at the end of month.
 
-## Technology Used 
-Html , Css , Vanilla Js
