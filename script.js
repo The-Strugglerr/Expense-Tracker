@@ -7,31 +7,80 @@
 // USER DATA
 
 const account1 = {
-  owner: 'Jonas Schmedtmann',
+  owner: 'Rahul Yadav',
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
   interestRate: 1.2, // %
   pin: 1111,
+
+  movementsDates: [
+    '2019-11-18T21:31:17.178Z',
+    '2019-12-23T07:42:02.383Z',
+    '2020-01-28T09:15:04.904Z',
+    '2021-04-01T10:17:24.185Z',
+    '2022-04-08T14:11:59.604Z',
+    '2023-01-12T10:51:36.790Z',
+    '2023-02-11T23:36:17.929Z',
+    '2023-03-27T17:01:17.194Z',
+  ],
+  currency: 'INR',
+  locale: 'en-in',
 };
 
 const account2 = {
-  owner: 'Jessica Davis',
+  owner: 'Arvind sharma',
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
   pin: 2222,
+  movementsDates: [
+    '2022-11-01T13:15:33.035Z',
+    '2022-11-30T09:48:16.867Z',
+    '2022-12-25T06:04:23.907Z',
+    '2023-01-25T14:18:46.235Z',
+    '2023-02-05T16:33:06.386Z',
+    '2023-04-10T14:43:26.374Z',
+    '2023-06-04T18:49:59.371Z',
+    '2023-06-05T12:01:20.894Z',
+  ],
+  currency: 'INR',
+  locale: 'en-in',
 };
 
 const account3 = {
-  owner: 'Steven Thomas Williams',
+  owner: 'Vaibhav Aggrawal',
   movements: [200, -200, 340, -300, -20, 50, 400, -460],
   interestRate: 0.7,
   pin: 3333,
+  movementsDates: [
+    '2022-09-01T13:15:33.035Z',
+    '2022-10-30T09:48:16.867Z',
+    '2022-12-21T06:04:23.907Z',
+    '2023-01-23T14:18:46.235Z',
+    '2023-01-26T16:33:06.386Z',
+    '2023-02-13T14:43:26.374Z',
+    '2023-03-12T18:49:59.371Z',
+    '2023-04-01T12:01:20.894Z',
+  ],
+  currency: 'INR',
+  locale: 'en-in',
 };
 
 const account4 = {
-  owner: 'Sarah Smith',
+  owner: 'Mridul Gupta',
   movements: [430, 1000, 700, 50, 90],
   interestRate: 1,
   pin: 4444,
+  movementsDates: [
+    '2022-11-01T13:15:33.035Z',
+    '2022-11-30T09:48:16.867Z',
+    '2022-12-25T06:04:23.907Z',
+    '2023-01-01T12:01:20.894Z',
+    '2023-01-05T16:33:06.386Z',
+    '2023-01-25T14:18:46.235Z',
+    '2023-02-03T18:49:59.371Z',
+    '2023-04-12T14:43:26.374Z',
+  ],
+  currency: 'INR',
+  locale: 'en-in',
 };
 
 const accounts = [account1, account2, account3, account4];
@@ -93,14 +142,49 @@ createUserNames(accounts);
 
 ////////////////////////////////////////////////////////////////////////
 
+// Dates function
+
+const showDates = function (date, locale) {
+  const daysdiff = (date1, date2) => {
+    return Math.trunc(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
+  };
+
+  const showdays = daysdiff(new Date(), date);
+  console.log(showdays);
+
+  if (showdays == 0) return `Today`;
+  if (showdays == 1) return `Yesterday`;
+  if (showdays <= 7) return `${showdays} Days Passed`;
+
+  const formatt = {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  };
+
+  return new Intl.DateTimeFormat(locale, formatt).format(date);
+
+  // const tday = `${date.getDate()}`.padStart(2, '0');
+  // const tmonth = `${date.getMonth() + 1}`.padStart(2, '0');
+  // const tyear = date.getFullYear();
+
+  // // const thour = `${date.getHours()}`.padStart(2, '0');
+  // // const tmin = `${date.getMinutes()}`.padStart(2, '0');
+  // return `${tday}/${tmonth}/${tyear} `;
+};
+
+////////////////////////////////////////////////////////////////////////
+
 //Below function Display the tansaction
 
-const movementsBox = function (movements, sortt = false) {
+const movementsBox = function (acc, sortt) {
   containerMovements.innerHTML = '';
 
-  movements = sortt ? movements.slice().sort((a, b) => a - b) : movements;
+  acc.movements = sortt
+    ? acc.movements.slice().sort((a, b) => a - b)
+    : acc.movements;
 
-  movements.forEach(function (mov, index) {
+  acc.movements.forEach(function (mov, index) {
     let transaction;
     if (mov > 0) {
       transaction = 'deposit';
@@ -108,13 +192,23 @@ const movementsBox = function (movements, sortt = false) {
       transaction = 'withdrawal';
     }
 
+    const now = new Date(acc.movementsDates[index]);
+
     let html = `<div class="movements__row">
-    <div class="movements__type movements__type--${transaction}">${
+
+                <div class="movements__type movements__type--${transaction}">${
       index + 1
     } ${transaction}</div>
-   
-    <div class="movements__value">${mov}€</div>
-    </div>;
+                <div class="movements__date">${showDates(now, acc.locale)}</div>
+                <div class="movements__value">${new Intl.NumberFormat(
+                  acc.locale,
+                  {
+                    style: 'currency',
+                    currency: acc.currency,
+                  }
+                ).format(mov)}
+                </div>
+              </div>
     `;
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
@@ -128,7 +222,14 @@ const movementsBox = function (movements, sortt = false) {
 
 const displayBalance = function (account) {
   account.totalBalance = account.movements.reduce((acc, movv) => acc + movv, 0);
-  labelBalance.textContent = `${account.totalBalance} €`;
+
+  const bal = new Intl.NumberFormat(account.locale, {
+    style: 'currency',
+    currency: account.currency,
+  }).format(account.totalBalance);
+
+  labelBalance.textContent = `${bal}`;
+  // console.log(bal);
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -141,7 +242,10 @@ const allDesposits = function (acc) {
   const totalDesposits = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, movv) => acc + movv, 0);
-  labelSumIn.textContent = `${totalDesposits}€`;
+  labelSumIn.textContent = `${new Intl.NumberFormat(acc.locale, {
+    style: 'currency',
+    currency: acc.currency,
+  }).format(totalDesposits)}`;
 };
 
 //below function display all the withdrawal in the accounts
@@ -150,7 +254,10 @@ const allWithdrawal = function (acc) {
   const totalWithdrawal = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, movv) => acc + movv, 0);
-  labelSumOut.textContent = `${Math.abs(totalWithdrawal)}€`;
+  labelSumOut.textContent = `${new Intl.NumberFormat(acc.locale, {
+    style: 'currency',
+    currency: acc.currency,
+  }).format(Math.abs(totalWithdrawal))}`;
 };
 
 //below function display all the intrest on every transaction suppose bank pays 1.5 interest on every deposit
@@ -160,7 +267,10 @@ const allInterest = function (acc) {
     .filter(mov => mov > 0)
     .map(dep => dep * (acc.interestRate / 100))
     .reduce((acc, movv) => acc + movv, 0);
-  labelSumInterest.textContent = `${Math.abs(totalInterest)}€`;
+  labelSumInterest.textContent = `${new Intl.NumberFormat(acc.locale, {
+    style: 'currency',
+    currency: acc.currency,
+  }).format(Math.abs(totalInterest))}`;
 };
 
 /////////////////////////////////////////////////////////////////////////
@@ -171,7 +281,7 @@ const allInterest = function (acc) {
 
 const showUi = function (acc) {
   // all the transactions
-  movementsBox(acc.movements);
+  movementsBox(acc);
 
   //all deposit withdraw total amount interest
 
@@ -187,9 +297,41 @@ const showUi = function (acc) {
 
 /////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////
+
+// lets set the login timer here
+const setTimeInterval = function () {
+  const tick = function () {
+    if (time == 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = `Log in to get started`;
+      containerApp.style.opacity = '0';
+    }
+    const minute = String(Math.trunc(time / 60)).padStart(2, 0);
+    const second = String(time % 60).padStart(2, 0);
+
+    labelTimer.textContent = `${minute} : ${second}`;
+
+    time--;
+  };
+
+  let time = 120;
+
+  tick();
+  return setInterval(tick, 1000);
+};
+
+////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////
+
 //Here we will work on login system first we enter user and pin then we get to display the details of account if input credentials match the original
 
-let currentAccount;
+let currentAccount, timer;
+
+// currentAccount = account1;
+// showUi(currentAccount);
+// containerApp.style.opacity = '100';
 
 btnLogin.addEventListener('click', function (e) {
   //here given button is button of login form so in html default behaviour is that page gets reload when we submit the input login form so to prevent it we use below method
@@ -201,7 +343,7 @@ btnLogin.addEventListener('click', function (e) {
   );
 
   //checking if pin is correct or not
-  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+  if (currentAccount?.pin === +inputLoginPin.value) {
     //display the welcome message and UI
     labelWelcome.textContent = `Welcome ${currentAccount.owner.split(' ')[0]}`;
 
@@ -211,6 +353,26 @@ btnLogin.addEventListener('click', function (e) {
 
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
+
+    // here the timer function is called we also check when we login to other accounts our timer lget reset
+    if (timer) clearInterval(timer);
+
+    timer = setTimeInterval();
+
+    const format = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+    };
+
+    labelDate.textContent = new Intl.DateTimeFormat(
+      currentAccount.locale,
+      format
+    ).format(new Date());
 
     //now since after the login we have to calcalate the total deposit withdraw total amount interest and all the transactions so we need to call all those above fucntions here
 
@@ -231,7 +393,7 @@ btnLogin.addEventListener('click', function (e) {
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
 
-  const amount = Number(inputTransferAmount.value);
+  const amount = +Math.floor(inputTransferAmount.value);
   const reciverAccount = accounts.find(
     account => account.userName === inputTransferTo.value
   );
@@ -244,11 +406,19 @@ btnTransfer.addEventListener('click', function (e) {
   ) {
     currentAccount.movements.push(-amount);
     reciverAccount.movements.push(amount);
+    currentAccount.movementsDates.push(new Date().toISOString());
+    reciverAccount.movementsDates.push(new Date().toISOString());
+
     showUi(currentAccount);
   }
   //emptying the transfer field
   inputTransferTo.value = inputTransferAmount.value = '';
   inputTransferAmount.blur();
+
+  // we get logout after certain time that why we set timer but will happen only there is no activity in account but activity like transfer happen then we need to reset that timer
+
+  clearInterval(timer);
+  timer = setTimeInterval();
 });
 
 ////////////////////////////////////////////////////////////////
@@ -259,14 +429,20 @@ btnTransfer.addEventListener('click', function (e) {
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
 
-  const amount = Number(inputLoanAmount.value);
+  const amount = +inputLoanAmount.value;
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
-    currentAccount.movements.push(Number(inputLoanAmount.value));
+    currentAccount.movements.push(+inputLoanAmount.value);
+    currentAccount.movementsDates.push(new Date().toISOString());
     showUi(currentAccount);
   }
 
   inputLoanAmount.value = '';
+
+  // we get logout after certain time that why we set timer but will happen only there is no activity in account but activity like transfer happen then we need to reset that timer
+
+  clearInterval(timer);
+  timer = setTimeInterval();
 });
 
 ////////////////////////////////////////////////////////////////
@@ -279,7 +455,7 @@ btnClose.addEventListener('click', function (e) {
 
   if (
     inputCloseUsername.value === currentAccount.userName &&
-    Number(inputClosePin.value) === currentAccount.pin
+    +inputClosePin.value === currentAccount.pin
   ) {
     const index = accounts.findIndex(
       account => account.userName === currentAccount.userName
@@ -307,6 +483,7 @@ let sortedState = false;
 
 btnSort.addEventListener('click', function (e) {
   e.preventDefault();
-  movementsBox(currentAccount.movements, !sortedState);
+  console.log('hi');
+  movementsBox(currentAccount, !sortedState);
   sortedState = !sortedState;
 });
